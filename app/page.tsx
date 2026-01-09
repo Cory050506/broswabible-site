@@ -13,13 +13,19 @@ export default async function Home() {
         </h1>
 
         <p className="text-lg text-slate-600">
-          Two bros reading Scripture, talking honestly about what it means,
-          and sharing lessons from God’s Word.
+          Weekly Christian podcast by two brothers in Christ, Rocco and Kayne.
+
+          Follow us on Instagram: @bros_with_a_bible
+          Follow us on TikTok: @broswithabible
+          Watch on YouTube: @broswithabible
+
+          Luke 1:37
+          "For with God nothing shall be impossible."
         </p>
 
         <div className="mt-6 flex justify-center gap-4">
           <a
-            href="https://open.spotify.com"
+            href="https://open.spotify.com/show/0BDGvnUCfxMA1hKb1Y0cOV?si=a5292b9144344b50"
             target="_blank"
             className="px-6 py-3 rounded bg-black text-white"
           >
@@ -27,12 +33,22 @@ export default async function Home() {
           </a>
 
           <a
-            href="https://facebook.com"
+            href="https://facebook.com/kayne.couch"
             target="_blank"
             className="px-6 py-3 rounded border"
           >
-            Watch on Facebook
+            Watch on Kayne's Facebook
           </a>
+
+          <a
+            href="https://facebook.com/rocco.willis.31"
+            target="_blank"
+            className="px-6 py-3 rounded border"
+          >
+            Watch on Rocco's Facebook
+          </a>
+
+          
         </div>
       </section>
 
