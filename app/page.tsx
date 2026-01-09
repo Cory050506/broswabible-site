@@ -1,3 +1,5 @@
+'use client'
+
 import { getEpisodes } from '@/lib/getEpisodes'
 
 export default async function Home() {
@@ -27,6 +29,7 @@ export default async function Home() {
           <a
             href="https://open.spotify.com/show/0BDGvnUCfxMA1hKb1Y0cOV?si=a5292b9144344b50"
             target="_blank"
+            rel="noopener noreferrer"
             className="px-6 py-3 rounded bg-black text-white"
           >
             Listen on Spotify
@@ -35,6 +38,7 @@ export default async function Home() {
           <a
             href="https://facebook.com/kayne.couch"
             target="_blank"
+            rel="noopener noreferrer"
             className="px-6 py-3 rounded border"
           >
             Watch on Kayne's Facebook
@@ -43,6 +47,7 @@ export default async function Home() {
           <a
             href="https://facebook.com/rocco.willis.31"
             target="_blank"
+            rel="noopener noreferrer"
             className="px-6 py-3 rounded border"
           >
             Watch on Rocco's Facebook
@@ -77,6 +82,7 @@ export default async function Home() {
                   height="152"
                   allow="autoplay; clipboard-write; encrypted-media"
                   className="mt-4 rounded"
+                  title={`Spotify embed for Episode ${ep.episodeNumber}: ${ep.title}`}
                 />
               )}
 
@@ -85,6 +91,7 @@ export default async function Home() {
                 <a
                   href={ep.facebookUrl}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block mt-4 text-blue-600 underline"
                 >
                   Watch video on Facebook
