@@ -1,4 +1,4 @@
-import { getEpisodes } from '../../lib/getEpisodes'
+import { getEpisodes } from '@/lib/getEpisodes'
 
 export default async function Home() {
   const episodes = await getEpisodes()
