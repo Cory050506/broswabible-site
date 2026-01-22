@@ -10,7 +10,8 @@ export async function getEpisodes() {
       audioUrl,
       sourceUrl,
       publishedAt
-    }
-      { cache: 'no-store' }
-  `)
+    }`,
+    {},
+    { next: { revalidate: 30 } }
+  )
 }
