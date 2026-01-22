@@ -11,5 +11,6 @@ export async function getEpisodes() {
       sourceUrl,
       publishedAt
     }
+      { cache: 'no-store' }
   `)
 }
