@@ -2,6 +2,8 @@ import { getEpisodes } from '@/lib/getEpisodes'
 
 export default async function Home() {
   const episodes = await getEpisodes()
+  const latest = episodes?.[0]
+  const rest = episodes?.slice(1) ?? []
 
   return (
     <main className="min-h-screen bg-white text-slate-800">
@@ -50,9 +52,50 @@ Luke 1:37
         </div>
       </section>
 
+       {/* LATEST EPISODE */}
+      <section className="max-w-3xl mx-auto px-6 pb-16">
+        <h2 className="text-2xl font-semibold mb-4">Latest Episode</h2>
+
+        {!latest ? (
+          <p className="text-slate-600">No episodes found yet.</p>
+        ) : (
+          <div className="rounded-lg border p-6 shadow-sm bg-white">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm text-slate-500">
+                  Episode {latest.episodeNumber}
+                </p>
+                <h3 className="text-xl font-semibold mt-1">
+                  {latest.title}
+                </h3>
+              </div>
+              {latest.publishedAt && (
+                <p className="text-sm text-slate-500 whitespace-nowrap">
+                  {new Date(latest.publishedAt).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+
+            {latest.description && (
+              <p className="text-slate-600 mt-3 whitespace-pre-line">
+                {latest.description}
+              </p>
+            )}
+
+            {latest.audioUrl && (
+              <audio controls preload="none" className="mt-4 w-full">
+                <source src={latest.audioUrl} />
+                Your browser does not support the audio element.
+              </audio>
+            )}
+          </div>
+        )}
+      </section>
+
+
       {/* EPISODES */}
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <h2 className="text-2xl font-semibold mb-8">Episodes</h2>
+        <h2 className="text-2xl font-semibold mb-8">All Episodes</h2>
 
         {(!episodes || episodes.length === 0) ? (
           <p className="text-slate-600">No episodes found yet.</p>
