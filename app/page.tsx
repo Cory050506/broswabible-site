@@ -24,7 +24,6 @@ export default async function Home() {
         <p className="text-lg text-slate-600 whitespace-pre-line">Watch on YouTube: <a href="https://www.youtube.com/@BrosWithaBible">@broswithabible</a></p>
         <br />
         <p className="text-lg text-slate-600 whitespace-pre-line centered-text">Luke 1:37</p>
-        <br />
         <p className="text-lg text-slate-600 whitespace-pre-line centered-text">"For with God nothing shall be impossible."</p>
 
 
