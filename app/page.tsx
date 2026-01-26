@@ -9,20 +9,27 @@ export default async function Home() {
     <main className="min-h-screen bg-stone-50 text-slate-800">
       {/* HERO */}
       <section className="max-w-3xl mx-auto px-6 py-20 text-center">
+        <br />
         <p>For support, email <a href="mailto:support@broswabible.qzz.io">support@broswabible.qzz.io</a></p>
         <img src="/logo.jpg" alt="Bros With a Bible Logo" className="mx-auto mb-5 w-56 sm:w-64 md:w-72 rounded-xl border border-slate-200 p-3" />
         <h1 className="text-4xl font-bold mb-4">Bros With a Bible</h1>
 
-        <p className="text-lg text-slate-600 whitespace-pre-line">
-{`Weekly Christian podcast by two brothers in Christ, Rocco and Kayne.
 
-Follow us on Instagram: @bros_with_a_bible
-Follow us on TikTok: @broswithabible
-Watch on YouTube: @broswithabible
+        <p className="text-lg text-slate-600 whitespace-pre-line">Weekly Christian podcast by two brothers in Christ, Rocco and Kayne.</p>
+        <br />
+        <p className="text-lg text-slate-600 whitespace-pre-line">Follow us on Instagram: <a href="https://www.instagram.com/bros_with_a_bible">@bros_with_a_bible</a></p>
+        <br />
+        <p className="text-lg text-slate-600 whitespace-pre-line">Follow us on TikTok: <a href="https://www.tiktok.com/@broswithabible">@broswithabible</a></p>
+        <br />
+        <p className="text-lg text-slate-600 whitespace-pre-line">Watch on YouTube: <a href="https://www.youtube.com/@BrosWithaBible">@broswithabible</a></p>
+        <br />
+        <p className="text-lg text-slate-600 whitespace-pre-line centered-text">Luke 1:37</p>
+        <br />
+        <p className="text-lg text-slate-600 whitespace-pre-line centered-text">"For with God nothing shall be impossible."</p>
 
-Luke 1:37
-"For with God nothing shall be impossible."`}
-        </p>
+
+
+        
 
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <a
