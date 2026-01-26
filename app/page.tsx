@@ -9,7 +9,7 @@ export default async function Home() {
     <main className="min-h-screen bg-stone-50 text-slate-800">
       {/* HERO */}
       <section className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <p>For support, email mailto:support@broswabible.qzz.io</p>
+        <p>For support, email <a>mailto:support@broswabible.qzz.io</a></p>
         <img src="/logo.jpg" alt="Bros With a Bible Logo" className="mx-auto mb-5 w-56 sm:w-64 md:w-72 rounded-xl border border-slate-200 p-3" />
         <h1 className="text-4xl font-bold mb-4">Bros With a Bible</h1>
 
