@@ -8,6 +8,7 @@ export async function getEpisodes() {
       episodeNumber,
       description,
       audioUrl,
+      facebookUrl,
       publishedAt
     }`,
     {},
