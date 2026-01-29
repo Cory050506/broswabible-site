@@ -1,6 +1,6 @@
 import { sanity } from './sanity'
 
-export async function getEpisodeByNumber(episodeNumber: number) {
+export async function getEpisodeByNumber(num: number) {
   const query = `*[_type == "episode" && episodeNumber == $num][0]{
     _id,
     title,
@@ -11,5 +11,5 @@ export async function getEpisodeByNumber(episodeNumber: number) {
     publishedAt
   }`
 
-  return sanity.fetch(query, { num: episodeNumber }, { next: { revalidate: 30 } })
+  return sanity.fetch(query, { num }, { next: { revalidate: 30 } })
 }
