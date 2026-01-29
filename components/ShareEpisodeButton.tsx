@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export default function ShareEpisodeButton({
   episodeNumber,
@@ -9,45 +9,37 @@ export default function ShareEpisodeButton({
 }) {
   const [copied, setCopied] = useState(false)
 
-  const id = `ep-${episodeNumber}`
-
-  useEffect(() => {
-    // On first load, if URL has a hash, smoothly scroll to it
-    const hash = window.location.hash?.replace('#', '')
-    if (!hash) return
-
-    const el = document.getElementById(hash)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [])
-
   async function onShare() {
-    const base = window.location.href.split('#')[0]
-    const url = `${base}#${id}`
-
-    // update URL + scroll smoothly
-    window.history.replaceState(null, '', `#${id}`)
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const url = `${window.location.origin}/episode/${episodeNumber}`
 
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
       setTimeout(() => setCopied(false), 1200)
     } catch {
-      // fallback if clipboard blocked
       prompt('Copy this link:', url)
     }
   }
 
   return (
-    <button
-      onClick={onShare}
-      className="inline-flex items-center gap-2 rounded border px-3 py-1.5 text-sm
-                 bg-white hover:bg-slate-50 transition"
-      type="button"
-      aria-label={`Share Episode ${episodeNumber}`}
-    >
-      {copied ? 'Copied!' : 'Share'}
-    </button>
+    <div className="flex items-center gap-2">
+      <a
+        href={`/episode/${episodeNumber}`}
+        className="inline-flex items-center gap-2 rounded border px-3 py-1.5 text-sm
+                   bg-white hover:bg-slate-50 transition"
+      >
+        Open
+      </a>
+
+      <button
+        onClick={onShare}
+        className="inline-flex items-center gap-2 rounded border px-3 py-1.5 text-sm
+                   bg-white hover:bg-slate-50 transition"
+        type="button"
+        aria-label={`Share Episode ${episodeNumber}`}
+      >
+        {copied ? 'Copied!' : 'Share'}
+      </button>
+    </div>
   )
 }

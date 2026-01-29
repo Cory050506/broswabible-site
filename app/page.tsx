@@ -3,10 +3,30 @@ import { getDailyVerse } from '@/lib/getDailyVerse'
 import ShareEpisodeButton from '@/components/ShareEpisodeButton'
 import LazyMedia from '@/components/LazyMedia'
 
-export default async function Home() {
-  const episodes = await getEpisodes()
-  const latest = episodes?.[0]
-  const rest = episodes?.slice(1) ?? []
+function buildHref(page: number, q?: string) {
+  const params = new URLSearchParams()
+  if (q) params.set('q', q)
+  if (page > 1) params.set('page', String(page))
+  const s = params.toString()
+  return s ? `/?${s}` : '/'
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { page?: string; q?: string }
+}) {
+  const pageSize = 10
+  const page = Math.max(1, Number(searchParams.page ?? '1') || 1)
+  const q = (searchParams.q ?? '').trim()
+
+  const { items: episodes, total } = await getEpisodes(page, pageSize, q)
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+
+  // Only show "Latest Episode" when NOT searching and on page 1
+  const showLatest = page === 1 && !q
+  const latest = showLatest ? episodes?.[0] : null
+  const rest = showLatest ? episodes?.slice(1) ?? [] : episodes
 
   const verse = await getDailyVerse()
 
@@ -54,6 +74,34 @@ export default async function Home() {
         <p className="text-lg text-slate-600 whitespace-pre-line">
           Weekly Christian podcast by two brothers in Christ, Rocco and Kayne.
         </p>
+
+        {/* SEARCH */}
+        <div className="mt-8 max-w-xl mx-auto">
+          <form action="/" method="GET" className="flex gap-2">
+            <input
+              name="q"
+              defaultValue={q}
+              placeholder="Search episodes… (title or description)"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2
+                         outline-none focus:ring-2 focus:ring-slate-200"
+            />
+            <button
+              type="submit"
+              className="rounded-lg bg-black text-white px-4 py-2 hover:opacity-90 transition"
+            >
+              Search
+            </button>
+          </form>
+
+          {q && (
+            <div className="mt-2 text-sm text-slate-500">
+              Showing results for <span className="font-medium">“{q}”</span> —{' '}
+              <a className="underline" href="/">
+                clear
+              </a>
+            </div>
+          )}
+        </div>
 
         <br />
         <p className="text-lg text-slate-600 whitespace-pre-line">
@@ -125,56 +173,91 @@ export default async function Home() {
       </section>
 
       {/* LATEST EPISODE */}
-      <section
-        className="max-w-3xl mx-auto px-6 pb-16"
-        id={latest ? `ep-${latest.episodeNumber}` : undefined}
-      >
-        <h2 className="text-2xl font-semibold mb-4">Latest Episode</h2>
+      {showLatest && (
+        <section
+          className="max-w-3xl mx-auto px-6 pb-16"
+          id={latest ? `ep-${latest.episodeNumber}` : undefined}
+        >
+          <h2 className="text-2xl font-semibold mb-4">Latest Episode</h2>
 
-        {!latest ? (
-          <p className="text-slate-600">No episodes found yet.</p>
-        ) : (
-          <div className="rounded-lg border p-6 shadow-sm bg-white transition-transform duration-200 hover:-translate-y-[1px]">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm text-slate-500">
-                  Episode {latest.episodeNumber}
-                </p>
-                <h3 className="text-xl font-semibold mt-1">{latest.title}</h3>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <ShareEpisodeButton episodeNumber={latest.episodeNumber} />
-                {latest.publishedAt && (
-                  <p className="text-sm text-slate-500 whitespace-nowrap">
-                    {new Date(latest.publishedAt).toLocaleDateString()}
+          {!latest ? (
+            <p className="text-slate-600">No episodes found yet.</p>
+          ) : (
+            <div className="rounded-lg border p-6 shadow-sm bg-white transition-transform duration-200 hover:-translate-y-[1px]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    Episode {latest.episodeNumber}
                   </p>
-                )}
+                  <h3 className="text-xl font-semibold mt-1">{latest.title}</h3>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <ShareEpisodeButton episodeNumber={latest.episodeNumber} />
+                  {latest.publishedAt && (
+                    <p className="text-sm text-slate-500 whitespace-nowrap">
+                      {new Date(latest.publishedAt).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
               </div>
+
+              {latest.description && (
+                <p className="text-slate-600 mt-3 whitespace-pre-line">
+                  {latest.description}
+                </p>
+              )}
+
+              <LazyMedia
+                facebookUrl={latest.facebookUrl}
+                audioUrl={latest.audioUrl}
+                title={`Episode ${latest.episodeNumber}: ${latest.title}`}
+              />
             </div>
-
-            {latest.description && (
-              <p className="text-slate-600 mt-3 whitespace-pre-line">
-                {latest.description}
-              </p>
-            )}
-
-            {/* Lazy load video/audio */}
-            <LazyMedia
-              facebookUrl={latest.facebookUrl}
-              audioUrl={latest.audioUrl}
-              title={`Episode ${latest.episodeNumber}: ${latest.title}`}
-            />
-          </div>
-        )}
-      </section>
+          )}
+        </section>
+      )}
 
       {/* ALL EPISODES */}
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <h2 className="text-2xl font-semibold mb-8">All Episodes</h2>
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <h2 className="text-2xl font-semibold">
+            {q ? 'Search Results' : 'All Episodes'}
+          </h2>
+          <p className="text-sm text-slate-500">
+            {total} episode{total === 1 ? '' : 's'}
+          </p>
+        </div>
+
+        {/* Pagination (top) */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mb-8">
+            <a
+              className={`px-4 py-2 rounded border bg-white hover:bg-slate-50 transition ${
+                page <= 1 ? 'pointer-events-none opacity-50' : ''
+              }`}
+              href={buildHref(page - 1, q)}
+            >
+              ← Newer
+            </a>
+
+            <p className="text-sm text-slate-500">
+              Page {page} of {totalPages}
+            </p>
+
+            <a
+              className={`px-4 py-2 rounded border bg-white hover:bg-slate-50 transition ${
+                page >= totalPages ? 'pointer-events-none opacity-50' : ''
+              }`}
+              href={buildHref(page + 1, q)}
+            >
+              Older →
+            </a>
+          </div>
+        )}
 
         {(!episodes || episodes.length === 0) ? (
-          <p className="text-slate-600">No episodes found yet.</p>
+          <p className="text-slate-600">No episodes found.</p>
         ) : (
           <div className="space-y-12">
             {rest.map((ep: any) => (
@@ -196,7 +279,6 @@ export default async function Home() {
                   </p>
                 )}
 
-                {/* Lazy load video/audio */}
                 <LazyMedia
                   facebookUrl={ep.facebookUrl}
                   audioUrl={ep.audioUrl}
@@ -204,6 +286,33 @@ export default async function Home() {
                 />
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Pagination (bottom) */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-10">
+            <a
+              className={`px-4 py-2 rounded border bg-white hover:bg-slate-50 transition ${
+                page <= 1 ? 'pointer-events-none opacity-50' : ''
+              }`}
+              href={buildHref(page - 1, q)}
+            >
+              ← Newer
+            </a>
+
+            <p className="text-sm text-slate-500">
+              Page {page} of {totalPages}
+            </p>
+
+            <a
+              className={`px-4 py-2 rounded border bg-white hover:bg-slate-50 transition ${
+                page >= totalPages ? 'pointer-events-none opacity-50' : ''
+              }`}
+              href={buildHref(page + 1, q)}
+            >
+              Older →
+            </a>
           </div>
         )}
       </section>
