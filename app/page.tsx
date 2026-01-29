@@ -1,13 +1,7 @@
 import { getEpisodes } from '@/lib/getEpisodes'
 import { getDailyVerse } from '@/lib/getDailyVerse'
 import ShareEpisodeButton from '@/components/ShareEpisodeButton'
-
-function fbEmbedSrc(videoUrl?: string) {
-  if (!videoUrl) return null
-  return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
-    videoUrl
-  )}&show_text=false`
-}
+import LazyMedia from '@/components/LazyMedia'
 
 export default async function Home() {
   const episodes = await getEpisodes()
@@ -16,36 +10,37 @@ export default async function Home() {
 
   const verse = await getDailyVerse()
 
-  const latestFb = fbEmbedSrc(latest?.facebookUrl)
-
   return (
     <main className="min-h-screen bg-stone-50 text-slate-800">
       {/* HERO */}
       <section className="max-w-3xl mx-auto px-6 py-20 text-center">
         <br />
-        {/* DAILY VERSE */}
-{verse && (
-  <div className="mb-6 rounded-lg border bg-white px-6 py-4 shadow-sm
-                  transition-transform duration-200 hover:-translate-y-[1px]">
-    <p className="text-sm text-slate-500 mb-1">
-      Daily Verse — {verse.reference}
-    </p>
-    <p className="text-slate-700 italic whitespace-pre-line">
-      {verse.text}
-    </p>
 
-    {verse.link && (
-      <a
-        href={verse.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-block mt-2 text-blue-600 underline text-sm"
-      >
-        Read on BibleGateway
-      </a>
-    )}
-  </div>
-)}
+        {/* DAILY VERSE */}
+        {verse && (
+          <div
+            className="mb-6 rounded-lg border bg-white px-6 py-4 shadow-sm
+                       transition-transform duration-200 hover:-translate-y-[1px]"
+          >
+            <p className="text-sm text-slate-500 mb-1">
+              Daily Verse — {verse.reference}
+            </p>
+            <p className="text-slate-700 italic whitespace-pre-line">
+              {verse.text}
+            </p>
+
+            {verse.link && (
+              <a
+                href={verse.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-blue-600 underline text-sm"
+              >
+                Read on BibleGateway
+              </a>
+            )}
+          </div>
+        )}
 
         <img
           src="/logo.jpg"
@@ -129,10 +124,11 @@ export default async function Home() {
         </div>
       </section>
 
-      
-
       {/* LATEST EPISODE */}
-      <section className="max-w-3xl mx-auto px-6 pb-16" id={latest ? `ep-${latest.episodeNumber}` : undefined}>
+      <section
+        className="max-w-3xl mx-auto px-6 pb-16"
+        id={latest ? `ep-${latest.episodeNumber}` : undefined}
+      >
         <h2 className="text-2xl font-semibold mb-4">Latest Episode</h2>
 
         {!latest ? (
@@ -163,36 +159,12 @@ export default async function Home() {
               </p>
             )}
 
-            {latestFb && (
-              <div className="mt-4 aspect-video w-full overflow-hidden rounded-lg border bg-black">
-                <iframe
-                  src={latestFb}
-                  className="h-full w-full"
-                  style={{ border: 'none', overflow: 'hidden' }}
-                  scrolling="no"
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  allowFullScreen
-                  title={`Facebook video for Episode ${latest.episodeNumber}: ${latest.title}`}
-                />
-              </div>
-            )}
-
-            {!latestFb && latest.audioUrl && (
-              <audio controls preload="none" className="mt-4 w-full">
-                <source src={latest.audioUrl} />
-              </audio>
-            )}
-
-            {latest.facebookUrl && (
-              <a
-                href={latest.facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 text-blue-600 underline"
-              >
-                Watch video on Facebook
-              </a>
-            )}
+            {/* Lazy load video/audio */}
+            <LazyMedia
+              facebookUrl={latest.facebookUrl}
+              audioUrl={latest.audioUrl}
+              title={`Episode ${latest.episodeNumber}: ${latest.title}`}
+            />
           </div>
         )}
       </section>
@@ -205,61 +177,33 @@ export default async function Home() {
           <p className="text-slate-600">No episodes found yet.</p>
         ) : (
           <div className="space-y-12">
-            {rest.map((ep: any) => {
-              const fb = fbEmbedSrc(ep.facebookUrl)
-
-              return (
-                <div
-                  key={ep._id}
-                  id={`ep-${ep.episodeNumber}`}
-                  className="border-t pt-8 scroll-mt-24"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold">
-                      Episode {ep.episodeNumber}: {ep.title}
-                    </h3>
-                    <ShareEpisodeButton episodeNumber={ep.episodeNumber} />
-                  </div>
-
-                  {ep.description && (
-                    <p className="text-slate-600 mt-2 whitespace-pre-line">
-                      {ep.description}
-                    </p>
-                  )}
-
-                  {fb && (
-                    <div className="mt-4 aspect-video w-full overflow-hidden rounded-lg border bg-black transition-transform duration-200 hover:-translate-y-[1px]">
-                      <iframe
-                        src={fb}
-                        className="h-full w-full"
-                        style={{ border: 'none', overflow: 'hidden' }}
-                        scrolling="no"
-                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                        allowFullScreen
-                        title={`Episode ${ep.episodeNumber}: ${ep.title}`}
-                      />
-                    </div>
-                  )}
-
-                  {!fb && ep.audioUrl && (
-                    <audio controls preload="none" className="mt-4 w-full">
-                      <source src={ep.audioUrl} />
-                    </audio>
-                  )}
-
-                  {ep.facebookUrl && (
-                    <a
-                      href={ep.facebookUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-4 text-blue-600 underline"
-                    >
-                      Watch video on Facebook
-                    </a>
-                  )}
+            {rest.map((ep: any) => (
+              <div
+                key={ep._id}
+                id={`ep-${ep.episodeNumber}`}
+                className="border-t pt-8 scroll-mt-24"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <h3 className="text-xl font-semibold">
+                    Episode {ep.episodeNumber}: {ep.title}
+                  </h3>
+                  <ShareEpisodeButton episodeNumber={ep.episodeNumber} />
                 </div>
-              )
-            })}
+
+                {ep.description && (
+                  <p className="text-slate-600 mt-2 whitespace-pre-line">
+                    {ep.description}
+                  </p>
+                )}
+
+                {/* Lazy load video/audio */}
+                <LazyMedia
+                  facebookUrl={ep.facebookUrl}
+                  audioUrl={ep.audioUrl}
+                  title={`Episode ${ep.episodeNumber}: ${ep.title}`}
+                />
+              </div>
+            ))}
           </div>
         )}
       </section>
@@ -271,7 +215,7 @@ export default async function Home() {
             support@broswabible.qzz.io
           </a>
         </p>
-        © {new Date().getFullYear()} Bros With a Bible
+        <p className="mt-2">© {new Date().getFullYear()} Bros With a Bible</p>
       </footer>
     </main>
   )
