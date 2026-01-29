@@ -1,19 +1,18 @@
 import { getEpisodeByNumber } from '@/lib/getEpisodeByNumber'
 import LazyMedia from '@/components/LazyMedia'
 
-export default async function EpisodePage({
-  params,
-}: {
-  params: { number: string }
+export default async function EpisodePage(props: {
+  params: Promise<{ number: string }>
 }) {
+  const params = await props.params
   const num = parseInt(params.number, 10)
 
   if (!Number.isFinite(num) || num <= 0) {
     return (
-      <main className="min-h-screen bg-stone-50 text-slate-800">
+      <main className="min-h-screen text-slate-100">
         <div className="max-w-3xl mx-auto px-6 py-20">
           <h1 className="text-3xl font-bold">Invalid episode</h1>
-          <a className="underline text-blue-600" href="/">
+          <a className="underline text-indigo-200 hover:text-indigo-100" href="/">
             Back to home
           </a>
         </div>
@@ -25,11 +24,11 @@ export default async function EpisodePage({
 
   if (!ep) {
     return (
-      <main className="min-h-screen bg-stone-50 text-slate-800">
+      <main className="min-h-screen text-slate-100">
         <div className="max-w-3xl mx-auto px-6 py-20">
           <h1 className="text-3xl font-bold">Episode not found</h1>
-          <p className="text-slate-600 mt-2">We couldn’t find Episode {num}.</p>
-          <a className="inline-block mt-6 underline text-blue-600" href="/">
+          <p className="text-slate-300/70 mt-2">We couldn’t find Episode {num}.</p>
+          <a className="inline-block mt-6 underline text-indigo-200 hover:text-indigo-100" href="/">
             Back to home
           </a>
         </div>
@@ -38,27 +37,31 @@ export default async function EpisodePage({
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 text-slate-800">
+    <main className="min-h-screen text-slate-100">
       <section className="max-w-3xl mx-auto px-6 py-16">
-        <a className="text-blue-600 underline" href="/">
+        <a className="text-indigo-200 hover:text-indigo-100 underline underline-offset-4" href="/">
           ← Back to all episodes
         </a>
 
-        <div className="mt-8 rounded-lg border p-6 shadow-sm bg-white">
-          <p className="text-sm text-slate-500">Episode {ep.episodeNumber}</p>
-          <h1 className="text-2xl font-bold mt-1">{ep.title}</h1>
+        <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur">
+          <p className="text-xs uppercase tracking-wider text-slate-300/70">
+            Episode {ep.episodeNumber}
+          </p>
+          <h1 className="text-2xl font-bold mt-2">{ep.title}</h1>
 
           {ep.description && (
-            <p className="text-slate-600 mt-4 whitespace-pre-line">
+            <p className="text-slate-200/75 mt-4 whitespace-pre-line leading-relaxed">
               {ep.description}
             </p>
           )}
 
-          <LazyMedia
-            facebookUrl={ep.facebookUrl}
-            audioUrl={ep.audioUrl}
-            title={`Episode ${ep.episodeNumber}: ${ep.title}`}
-          />
+          <div className="mt-5">
+            <LazyMedia
+              facebookUrl={ep.facebookUrl}
+              audioUrl={ep.audioUrl}
+              title={`Episode ${ep.episodeNumber}: ${ep.title}`}
+            />
+          </div>
         </div>
       </section>
     </main>

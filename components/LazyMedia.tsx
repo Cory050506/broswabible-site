@@ -56,7 +56,14 @@ export default function LazyMedia({
         <button
           type="button"
           onClick={() => setLoaded(true)}
-          className="w-full rounded-lg border bg-white px-4 py-3 text-sm hover:bg-slate-50 transition"
+          className="mt-4 block w-full rounded-xl
+      border border-white/10
+      bg-white/5 px-4 py-3
+      text-center text-sm font-medium text-slate-100
+      backdrop-blur
+      shadow-[0_0_0_1px_rgba(255,255,255,0.04)]
+      transition
+      hover:bg-white/10"
         >
           Click to load video/audio
         </button>
