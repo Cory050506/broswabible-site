@@ -4,12 +4,12 @@ import ShareEpisodeButton from '@/components/ShareEpisodeButton'
 import LazyMedia from '@/components/LazyMedia'
 
 function buildHref(page: number, q?: string) {
-  const params = new URLSearchParams()
-  if (q) params.set('q', q)
-  if (page > 1) params.set('page', String(page))
-  const s = params.toString()
-  return s ? `/?${s}` : '/'
+  const parts: string[] = []
+  if (q && q.trim()) parts.push(`q=${encodeURIComponent(q.trim())}`)
+  if (page > 1) parts.push(`page=${page}`)
+  return parts.length ? `/?${parts.join('&')}` : '/'
 }
+
 
 export default async function Home({
   searchParams,
