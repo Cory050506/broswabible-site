@@ -4,21 +4,40 @@ export type DailyVerse = {
   link?: string
 }
 
-function stripHtml(input: string) {
-  return input
-    .replace(/<!\[CDATA\[/g, '')
-    .replace(/\]\]>/g, '')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<[^>]*>/g, '')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .trim()
+function decodeHtmlEntities(text: string) {
+  const map: Record<string, string> = {
+    '&ldquo;': '“',
+    '&rdquo;': '”',
+    '&#8220;': '“',
+    '&#8221;': '”',
+    '&#8216;': '‘',
+    '&#8217;': '’',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&apos;': "'",
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+  }
+
+  return text.replace(
+    /(&ldquo;|&rdquo;|&#8220;|&#8221;|&#8216;|&#8217;|&quot;|&#39;|&apos;|&amp;|&lt;|&gt;)/g,
+    (m) => map[m] || m
+  )
 }
+
+function stripHtml(input: string) {
+  return decodeHtmlEntities(
+    input
+      .replace(/<!\[CDATA\[/g, '')
+      .replace(/\]\]>/g, '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      .trim()
+  )
+}
+
 
 export async function getDailyVerse(): Promise<DailyVerse | null> {
   // BibleGateway Verse of the Day Atom feed (free)

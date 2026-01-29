@@ -23,12 +23,29 @@ export default async function Home() {
       {/* HERO */}
       <section className="max-w-3xl mx-auto px-6 py-20 text-center">
         <br />
-        <p>
-          For support, email{' '}
-          <a className="underline" href="mailto:support@broswabible.qzz.io">
-            support@broswabible.qzz.io
-          </a>
-        </p>
+        {/* DAILY VERSE */}
+{verse && (
+  <div className="mb-6 rounded-lg border bg-white px-6 py-4 shadow-sm
+                  transition-transform duration-200 hover:-translate-y-[1px]">
+    <p className="text-sm text-slate-500 mb-1">
+      Daily Verse — {verse.reference}
+    </p>
+    <p className="text-slate-700 italic whitespace-pre-line">
+      {verse.text}
+    </p>
+
+    {verse.link && (
+      <a
+        href={verse.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block mt-2 text-blue-600 underline text-sm"
+      >
+        Read on BibleGateway
+      </a>
+    )}
+  </div>
+)}
 
         <img
           src="/logo.jpg"
@@ -112,32 +129,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* DAILY VERSE */}
-      <section className="max-w-3xl mx-auto px-6 pb-12">
-        <div className="rounded-lg border bg-white p-6 shadow-sm transition-transform duration-200 hover:-translate-y-[1px]">
-          <h2 className="text-2xl font-semibold mb-3">Daily Verse</h2>
-
-          {!verse ? (
-            <p className="text-slate-600">Unable to load the daily verse right now.</p>
-          ) : (
-            <>
-              <p className="text-sm text-slate-500 mb-2">{verse.reference}</p>
-              <p className="text-slate-700 whitespace-pre-line">{verse.text}</p>
-
-              {verse.link && (
-                <a
-                  href={verse.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-3 text-blue-600 underline"
-                >
-                  Read on BibleGateway
-                </a>
-              )}
-            </>
-          )}
-        </div>
-      </section>
+      
 
       {/* LATEST EPISODE */}
       <section className="max-w-3xl mx-auto px-6 pb-16" id={latest ? `ep-${latest.episodeNumber}` : undefined}>
@@ -273,6 +265,12 @@ export default async function Home() {
       </section>
 
       <footer className="text-center py-8 text-slate-500 text-sm">
+        <p>
+          For support, email{' '}
+          <a className="underline" href="mailto:support@broswabible.qzz.io">
+            support@broswabible.qzz.io
+          </a>
+        </p>
         © {new Date().getFullYear()} Bros With a Bible
       </footer>
     </main>
