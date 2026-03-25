@@ -10,6 +10,25 @@ import Reveal from '@/components/Reveal'
 type SearchParams = {
   page?: string
   q?: string
+  season?: string
+}
+
+function buildFilterHref({
+  page,
+  q,
+  season,
+}: {
+  page?: number
+  q?: string
+  season?: number
+}) {
+  const parts: string[] = []
+
+  if (q && q.trim()) parts.push(`q=${encodeURIComponent(q.trim())}`)
+  if (season) parts.push(`season=${season}`)
+  if (page && page > 1) parts.push(`page=${page}`)
+
+  return parts.length ? `/?${parts.join('&')}` : '/'
 }
 
 export default async function Home(props: {
@@ -20,8 +39,9 @@ export default async function Home(props: {
   const pageSize = 10
   const page = Math.max(1, Number(searchParams.page ?? '1') || 1)
   const q = (searchParams.q ?? '').trim()
+  const season = searchParams.season ? Number(searchParams.season) : undefined
 
-  const { items: episodes, total } = await getEpisodes(page, pageSize, q)
+  const { items: episodes, total, seasons } = await getEpisodes(page, pageSize, q, season)
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   const showLatest = page === 1 && !q
@@ -152,7 +172,7 @@ export default async function Home(props: {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs uppercase tracking-wider text-slate-300/70">
-                        Episode {latest.episodeNumber}
+                        Season {latest.seasonNumber} • Episode {latest.episodeNumber}
                       </p>
                       <h3 className="text-xl sm:text-2xl font-semibold mt-2">
                         {latest.title}
@@ -160,7 +180,10 @@ export default async function Home(props: {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <ShareEpisodeButton episodeNumber={latest.episodeNumber} />
+                      <ShareEpisodeButton
+  seasonNumber={latest.seasonNumber}
+  episodeNumber={latest.episodeNumber}
+/>
                       {latest.publishedAt && (
                         <p className="text-sm text-slate-300/70 whitespace-nowrap">
                           {new Date(latest.publishedAt).toLocaleDateString()}
@@ -179,7 +202,7 @@ export default async function Home(props: {
                     <LazyMedia
                       facebookUrl={latest.facebookUrl}
                       audioUrl={latest.audioUrl}
-                      title={`Episode ${latest.episodeNumber}: ${latest.title}`}
+                      title={`Season ${latest.seasonNumber} • Episode ${latest.episodeNumber}: ${latest.title}`}
                     />
                   </div>
                 </div>
@@ -205,6 +228,7 @@ export default async function Home(props: {
                 </div>
 
                 <form action="/" method="GET" className="flex gap-2">
+                  {season && <input type="hidden" name="season" value={season} />}
                   <input
                     name="q"
                     defaultValue={q}
@@ -222,10 +246,43 @@ export default async function Home(props: {
                 </form>
               </div>
 
+              {/* SEASON SELECTOR */}
+              {seasons?.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <a
+                    href={buildFilterHref({ q })}
+                    className={`rounded-xl px-4 py-2 text-sm font-medium transition border ${
+                      !season
+                        ? 'bg-white text-black border-white'
+                        : 'bg-white/5 text-slate-100 border-white/10 hover:bg-white/10'
+                    }`}
+                  >
+                    All Seasons
+                  </a>
+
+                  {seasons.map((s: number) => (
+                    <a
+                      key={s}
+                      href={buildFilterHref({ q, season: s })}
+                      className={`rounded-xl px-4 py-2 text-sm font-medium transition border ${
+                        season === s
+                          ? 'bg-white text-black border-white'
+                          : 'bg-white/5 text-slate-100 border-white/10 hover:bg-white/10'
+                      }`}
+                    >
+                      Season {s}
+                    </a>
+                  ))}
+                </div>
+              )}
+
               {q && (
                 <div className="mt-3 text-sm text-slate-300/70">
                   Showing results for <span className="text-slate-100">“{q}”</span> —{' '}
-                  <a className="underline underline-offset-4" href="/">
+                  <a
+                    className="underline underline-offset-4"
+                    href={buildFilterHref({ season })}
+                  >
                     clear
                   </a>
                 </div>
@@ -251,11 +308,14 @@ export default async function Home(props: {
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <p className="text-xs uppercase tracking-wider text-slate-300/70">
-                            Episode {ep.episodeNumber}
+                            Season {ep.seasonNumber} • Episode {ep.episodeNumber}
                           </p>
                           <h3 className="text-xl font-semibold mt-2">{ep.title}</h3>
                         </div>
-                        <ShareEpisodeButton episodeNumber={ep.episodeNumber} />
+                        <ShareEpisodeButton
+  seasonNumber={ep.seasonNumber}
+  episodeNumber={ep.episodeNumber}
+/>
                       </div>
 
                       {ep.description && (
@@ -268,7 +328,7 @@ export default async function Home(props: {
                         <LazyMedia
                           facebookUrl={ep.facebookUrl}
                           audioUrl={ep.audioUrl}
-                          title={`Episode ${ep.episodeNumber}: ${ep.title}`}
+                          title={`Season ${ep.seasonNumber} • Episode ${ep.episodeNumber}: ${ep.title}`}
                         />
                       </div>
                     </div>
