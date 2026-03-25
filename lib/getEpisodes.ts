@@ -24,7 +24,7 @@ export async function getEpisodes(
   const filter = `*[${filters.join(' && ')}]`
 
   const query = `{
-    "items": ${filter} | order(episodeNumber desc) [${start}...${end}]{
+    "items": ${filter} | order(publishedAt desc) [${start}...${end}]{
       _id,
       title,
       seasonNumber,
